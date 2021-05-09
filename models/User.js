@@ -1,5 +1,5 @@
 
-const usersCollection = require('../db')/*.collection('users');*/
+const usersCollection = require('../db').collection('users');
 
 const validator = require('validator');
 // setting up a constructor function
