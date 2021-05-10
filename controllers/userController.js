@@ -5,12 +5,14 @@ exports.login = function () {};
 exports.logout = function () {};
 
 exports.register = function (req, res) {
+  console.log(req.body)
    let user = new User(req.body);
    user.register();
+   // if length is 0 condition won't be met
    if (user.errors.length) {
-     res.send(user.errors);
+     res.send(user.errors);  ///sending errors to user
    } else {
-     res.send('Congrats, there are no errors');
+     res.send('<h1 style="color:green">Congrats, there are no errors</h1>');
    }
 };
 
