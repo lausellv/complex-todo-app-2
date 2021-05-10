@@ -2,12 +2,15 @@
 const usersCollection = require('../db').collection('users');
 
 const validator = require('validator');
-// setting up a constructor function
+// Step 1 - user properties
+//setting up a constructor function to define our users 
 let User = function (data) {
+ 
   this.data = data; /*this.pizza*/
   this.errors = [];
 };
-
+// Step 2 - user methods
+// adding a method to our constructor function /more efficient bc we don't have to access methods unless a req is made.  The User will have access to them but not all users will need to have access to all the methods (ie - potential situations that may arise)
 User.prototype.cleanUp = function () {
   if (typeof this.data.username != 'string') {
     this.data.username = '';
@@ -27,6 +30,7 @@ User.prototype.cleanUp = function () {
   };
 };
 
+//before we register the user , we have to validate the user 
 User.prototype.validate = function () {
   if (this.data.username == '') {
     this.errors.push('You must provide a username');
@@ -48,15 +52,17 @@ User.prototype.validate = function () {
   if (this.data.password == '') {
     this.errors.push('you must provide a password');
   }
-  if (this.data.password.length >= 0 && this.data.password.length < 10) {
+  if (this.data.password.length > 0 && this.data.password.length < 10) {
     this.errors.push('Password must be at least 10 characters long');
   }
-  if (this.data.password.length > 100) {
-    this.errors.push('Password cannot exceed 100 characters.');
+  if (this.data.password.length > 20) {
+    this.errors.push('Password cannot exceed 20 characters.');
   }
 };
+
+
 User.prototype.register = function () {
-  //step 1 - validate userdata
+  //step 1 - validate userdata  see User.prototype.cleanup and User.prototype.validate
   this.cleanUp();
   this.validate();
 
