@@ -8,12 +8,14 @@ mongodb = require('mongodb');
 //mongodb.connect(a=connectionString,{},c=function (err, client))
 mongodb.connect(process.env.CONNECTIONSTRING, {useNewUrlParser: true, useUnifiedTopology: true}, function(err, client){
   // firts we access mongodb
-module.exports = client.db();  // from here we can find the collection
+module.exports = client.db();  // from here we can access the mongodb collections in our db for this app
 //now we can access the app
 const app = require('./app');
 app.listen(process.env.PORT, "127.0.0.1", function (){
     console.log(`Listening on ${process.env.PORT}`)
   })
+
+
 
 })
 
