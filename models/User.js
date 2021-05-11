@@ -70,8 +70,8 @@ User.prototype.validate = function () {
 
 
 User.prototype.login = function(callback){
-this.cleanUp();
-// does the user exist?  we ahve to check in our mongodb  usersCollection(a,b)
+this.cleanUp();  // we cleaned up the data 
+// does the user exist?  we have to access our mongodb  usersCollection(a,b)
 usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {  // arrow funtions do not manipualte the this keyword 
 if (attemptedUser && attemptedUser.password == this.data.password){
 callback('congrats')
