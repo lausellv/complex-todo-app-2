@@ -74,10 +74,12 @@ this.cleanUp();
 // does the user exist?  we ahve to check in our mongodb  usersCollection(a,b)
 usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {  // arrow funtions do not manipualte the this keyword 
 if (attemptedUser && attemptedUser.password == this.data.password){
+  console.log('congrats')
 callback('congrats')
 }
 
 else{
+  console.log('invalid username / password')
   callback ('invalid username / password')
 }
 })
