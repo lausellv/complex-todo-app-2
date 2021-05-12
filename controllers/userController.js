@@ -1,13 +1,22 @@
 const User = require('../models/User');
 
-exports.login = function (req, res, next) {
+//using a promise
+exports.login = function (req, res) {
 let user = new User(req.body);
 user.login().then(function (result){
   res.send(result)
-}).catch(function (e){
-  res.send(e)
-});
-};
+}).catch(function (err){
+  res.send(err)
+})
+ };
+
+// traditional way using a callback function
+// exports.login = function (req, res) {
+//   let user = new User(req.body);
+//   user.login(function (result){  // this is the callback from Users.prototype.login we are passing in as an argument
+// res.send(result)  // this is what we send to the viewer // whatever comes out from the User.prototype.login callback depending on the if or else outcome
+//   })
+// }
 
 exports.logout = function () {};
 
