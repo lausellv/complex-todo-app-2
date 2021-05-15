@@ -1,3 +1,5 @@
+// requiring bcryptjs
+const bcrypt = require('bcryptjs');
 //requiring mongodb users collection
 const usersCollection = require('../db').collection('users');
 //email "validator" check package 
@@ -5,7 +7,6 @@ const validator = require('validator');
 // Step 1 - user properties
 //setting up a constructor function to define our users 
 let User = function (data) {
- 
   this.data = data; /*this.pizza*/
   this.errors = [];
 };
@@ -60,29 +61,48 @@ User.prototype.validate = function () {
   if (this.data.password == '') {
     this.errors.push('you must provide a password');
   }
-  if (this.data.password.length > 0 && this.data.password.length < 10) {
-    this.errors.push('Password must be at least 10 characters long');
+  if (this.data.password.length > 0 && this.data.password.length < 7) {
+    this.errors.push('Password must be at least 7 characters long');
   }
   if (this.data.password.length > 20) {
     this.errors.push('Password cannot exceed 20 characters.');
   }
 };
 
+// traditional callback method
+// User.prototype.login = function (callback){
+//   this.cleanUp();  // make sure our values are strings of text
+//   usersCollection.findOne({username: this.data.username}, (err, attemptedUser)=>{
+//     if (attemptedUser && attemptedUser.password  == this.data.password){
+// callback ('<h1 style="color:green;">Congrats!</h1>');
+//     }else{
+// callback('<h1 style="color:red;">wrong username password!</h1>');
+//     }
+//   })
+// }
 
-User.prototype.login = function(callback){
-this.cleanUp();  // we cleaned up the data 
-// does the user exist?  we have to access our mongodb  usersCollection(a,b)
-usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {  // arrow funtions do not manipualte the this keyword 
-if (attemptedUser && attemptedUser.password == this.data.password){
-callback('congrats')
-}
+// using promises
+User.prototype.login = function () {
+  return new Promise((resolve, reject) => {
+    // will return a new object that is a promise
+    this.cleanUp(); // we cleaned up the data
+    // does the user exist?  we have to access our mongodb  usersCollection(a,b)
+    usersCollection.findOne(
+      { username: this.data.username }
+    ).then((attemptedUser) => {
+      if (attemptedUser && bcrypt.compareSync(this.data.password, attemptedUser.password)) {
+      //if (attemptedUser && attemptedUser.password == this.data.password) {
+        resolve('<h1 style="color:green;">Congrats!</h1>');
+      } else {
+        reject('<h1 style="color:red;">wrong username password!</h1>');
+      }
+    }).catch(function(){
+      reject ('Please try again later')
+    });
+  });
+};
 
-else{
-  callback ('invalid username / password')
-}
-})
 
-}
 
 
 User.prototype.register = function () {
@@ -92,7 +112,10 @@ User.prototype.register = function () {
 
   //step 2 - only if there are no validation errors then save userdata into a database
 if (!this.errors.length){
-usersCollection.insertOne(this.data)
+//hash userpassword now that we know there are no errors
+let salt = bcrypt.genSaltSync(10)
+this.data.password = bcrypt.hashSync(this.data.password, salt)
+  usersCollection.insertOne(this.data)
 }
 
 };
