@@ -1,13 +1,36 @@
+const { request } = require('../app');
 const User = require('../models/User');
 
-exports.login = function (req, res, next) {
-let user = new User(req.body);
-user.login().then(function (result){
-  res.send(result)
-}).catch(function (e){
-  res.send(e)
-});
-};
+
+//user login using Promise
+// exports.login = function (req, res, next) {
+// let user = new User(req.body);
+// user.login().then(function (result){
+//   res.send(result)
+// }).catch(function (e){
+//   res.send(e)
+// });
+// };
+
+
+exports.login = function (req, res) {
+  let user = new User (req.body);
+user.login().then(function(itworks){
+  req.session.user = {username: user.data.username}
+  res.send(itworks)
+}).catch(function(doesntWorkError){
+  res.send(doesntWorkError)
+})
+}
+
+// user login usinng traditional callback
+// exports.login = function (req, res) {
+//   let user = new User (req.body);
+// user.login(function (result){
+//   res.send(result)
+// })
+// }
+
 
 exports.logout = function () {};
 
@@ -23,5 +46,9 @@ exports.register = function (req, res) {
 };
 
 exports.home = function (req, res) {
-  res.render('home-guest');
+  if (req.session.user){
+res.send ('<h1 style="color:green">welcome to the actual app!!</h1>')
+  }else {
+    res.render('home-guest');
+  }
 };
