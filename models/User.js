@@ -69,6 +69,7 @@ User.prototype.validate = function () {
   }
 };
 
+<<<<<<< HEAD
 // traditional callback method
 // User.prototype.login = function (callback){
 //   this.cleanUp();  // make sure our values are strings of text
@@ -103,6 +104,38 @@ User.prototype.login = function () {
 };
 
 
+=======
+// the traditional way using callback 
+// User.prototype.login = function (callback){
+//   this.cleanUp();
+// usersCollection.findOne({username: this.data.username}, (err, attemptedUser)=>{
+// if(attemptedUser && attemptedUser.password == this.data.password){
+//   console.log('valid username and password')
+//   callback('<h1>valid username and password</h1>')  // this callback is called once we have accessed the mongodb account
+// }else {
+//   console.log('invalid credentials')
+//   callback('invalid credentials')
+// }
+// })
+// }
+
+User.prototype.login = function () {
+  return new Promise( (resolve, reject) => {
+    this.cleanUp(); // we clean up the data first
+    // // does the user exist?  we have to access our mongodb  usersCollection(a,b)
+    usersCollection.findOne(
+      { username: this.data.username}).then((attemptedUser)=>{
+        if (attemptedUser && attemptedUser.password == this.data.password) {
+          resolve('<h1 style="color:green">valid username </h1>');
+        } else {
+          reject('<h1 style="color:red"> invalid username / password</h1>');
+        }
+      }).catch(function(){
+        reject("Please try again later")
+      }) 
+  });
+};
+>>>>>>> e7ce7d99d19e32ba931a89605cfe9200c4d83df4
 
 
 User.prototype.register = function () {
