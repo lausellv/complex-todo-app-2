@@ -1,4 +1,4 @@
-const { request } = require('../app');
+//const { request } = require('../app');
 const User = require('../models/User');
 
 
@@ -16,7 +16,7 @@ const User = require('../models/User');
 exports.login = function (req, res) {
   let user = new User (req.body);
 user.login().then(function(itworks){
-  req.session.user = {username: user.data.username}
+  req.session.user = {favoriteColor: 'blue', username: user.data.username}
   res.send(itworks)
 }).catch(function(doesntWorkError){
   res.send(doesntWorkError)
