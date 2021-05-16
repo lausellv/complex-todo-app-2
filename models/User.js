@@ -94,7 +94,7 @@ User.prototype.login = function () {
       //if (attemptedUser && attemptedUser.password == this.data.password) {
         resolve('<h1 style="color:green;">Congrats!</h1>');
       } else {
-        reject('<h1 style="color:red;">wrong username password!</h1>');
+        reject('<h1 style="color:red;">Wrong username password!</h1>');
       }
     }).catch(function(){
       reject ('Please try again later')
@@ -115,6 +115,7 @@ if (!this.errors.length){
 //hash userpassword now that we know there are no errors
 let salt = bcrypt.genSaltSync(10)
 this.data.password = bcrypt.hashSync(this.data.password, salt)
+//use bcrypt before inserting the user
   usersCollection.insertOne(this.data)
 }
 
