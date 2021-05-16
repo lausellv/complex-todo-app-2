@@ -46,9 +46,9 @@ exports.register = function (req, res) {
 };
 
 exports.home = function (req, res) {
-  if (req.session.user){
-res.send ('<h1 style="color:green">welcome to the actual app!!</h1>')
-  }else {
+  if (req.session.user) {
+    res.render('home-dashboard');
+  } else {
     res.render('home-guest');
   }
 };

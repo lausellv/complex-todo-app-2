@@ -1,7 +1,7 @@
 // requiring bcryptjs
 const bcrypt = require('bcryptjs');
 //requiring mongodb users collection
-const usersCollection = require('../db').collection('users');
+const usersCollection = require('../db').db().collection('users');
 //email "validator" check package 
 const validator = require('validator');
 // Step 1 - user properties
