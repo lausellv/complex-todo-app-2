@@ -17,7 +17,9 @@ exports.login = function (req, res) {
   let user = new User (req.body);
 user.login().then(function(itworks){
   req.session.user = {favoriteColor: 'blue', username: user.data.username}
-  res.send(itworks)
+  req.session.save(function (){
+  res.redirect('/');
+  })
 }).catch(function(doesntWorkError){
   res.send(doesntWorkError)
 })
@@ -32,7 +34,12 @@ user.login().then(function(itworks){
 // }
 
 
-exports.logout = function () {};
+exports.logout = function (req, res) {
+  req.session.destroy(function (){
+    res.redirect('/');
+  })
+
+};
 
 exports.register = function (req, res) {
    let user = new User(req.body);
