@@ -25,8 +25,12 @@ exports.login = function (req, res) {
         res.redirect('/');
       });
     })
-    .catch(function (doesntWorkError) {
-      res.send(doesntWorkError);
+    .catch(function (doesntWorkError) {  // typically one uses e
+req.flash('errors', doesntWorkError)
+// req.session.flash.errors = [doesntWorkError]
+  req.session.save(function (){
+        res.redirect('/');
+      })
     });
 };
 
@@ -62,6 +66,6 @@ exports.home = function (req, res) {
     });
     /*[0].toUpperCase()+req.session.user.username.toLowerCase().slice(1)*/
   } else {
-    res.render('home-guest');
+    res.render('home-guest', {errors: req.flash('errors')});
   }
 };
