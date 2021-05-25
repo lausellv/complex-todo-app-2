@@ -1,7 +1,6 @@
 //const { request } = require('../app');
 const User = require('../models/User');
 
-
 //Part 1 user login using Promise
 // exports.login = function (req, res, next) {
 // let user = new User(req.body);
@@ -12,16 +11,24 @@ const User = require('../models/User');
 // });
 // };
 
-//Part 1a added session validation 
+//Part 1a added session validation
 exports.login = function (req, res) {
-  let user = new User (req.body);
-user.login().then(function(itworks){
-  req.session.user = {favoriteColor: 'blue', username: user.data.username}
-  res.send(itworks)
-}).catch(function(doesntWorkError){
-  res.send(doesntWorkError)
-})
-}
+  let user = new User(req.body);
+  user
+    .login()
+    .then(function (itworks) {
+      req.session.user = {
+        favoriteColor: 'blue',
+        username: user.data.username,
+      };
+      req.session.save(function () {
+        res.redirect('/');
+      });
+    })
+    .catch(function (doesntWorkError) {
+      res.send(doesntWorkError);
+    });
+};
 
 // user login usinng traditional callback
 // exports.login = function (req, res) {
@@ -31,23 +38,29 @@ user.login().then(function(itworks){
 // })
 // }
 
-
-exports.logout = function () {};
+exports.logout = function (req, res) {
+  req.session.destroy(function () {
+    res.redirect('/');
+  });
+};
 
 exports.register = function (req, res) {
-   let user = new User(req.body);
-   user.register();
-   // if length is 0 condition won't be met
-   if (user.errors.length) {
-     res.send(user.errors);  ///sending errors to user
-   } else {
-     res.send('<h1 style="color:green">Congrats, there are no errors</h1>');
-   }
+  let user = new User(req.body);
+  user.register();
+  // if length is 0 condition won't be met
+  if (user.errors.length) {
+    res.send(user.errors); ///sending errors to user
+  } else {
+    res.send('<h1 style="color:green">Congrats, there are no errors</h1>');
+  }
 };
 
 exports.home = function (req, res) {
   if (req.session.user) {
-    res.render('home-dashboard', {username: req.session.user.username});
+    res.render('home-dashboard', {
+      username: req.session.user.username.toUpperCase()
+    });
+    /*[0].toUpperCase()+req.session.user.username.toLowerCase().slice(1)*/
   } else {
     res.render('home-guest');
   }
