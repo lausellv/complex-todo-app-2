@@ -94,7 +94,7 @@ User.prototype.login = function () {
       //if (attemptedUser && attemptedUser.password == this.data.password) {
         resolve('<h1 style="color:green;">Congrats!</h1>');
       } else {
-        reject('<h1 style="color:red;">Wrong username password!</h1>');
+        reject('Invalid Username / Password!');
       }
     }).catch(function(){
       reject ('Please try again later')
