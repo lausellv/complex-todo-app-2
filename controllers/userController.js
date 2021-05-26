@@ -53,7 +53,12 @@ exports.register = function (req, res) {
   user.register();
   // if length is 0 condition won't be met
   if (user.errors.length) {
-    res.send(user.errors); ///sending errors to user
+    user.errors.forEach(function(error){
+      req.flash('regErrors', error)
+    }); ///sending errors to user
+    req.session.save(function(){
+      res.redirect('/')
+    })
   } else {
     res.send('<h1 style="color:green">Congrats, there are no errors</h1>');
   }
