@@ -73,13 +73,13 @@ User.prototype.validate = function (){
     // only if username is valid then check to see if it's already taken 
     if (this.data.username.length > 2 && this.data.username.length < 31 && validator.isAlphanumeric(this.data.username)){
   let usernameExists = await usersCollection.findOne({username: this.data.username});  //if mongodb doesn't find a doc the promise will return to null
-  if (usernameExists){this.errors.push('This username is already taken')}
+  if (usernameExists){this.errors.push("This username is already taken")}
     }
   
      // only if email is valid then check to see if it's already taken 
-    else if (validator.isEmail(this.data.email)){
+    if (validator.isEmail(this.data.email)){
       let emailExists = await usersCollection.findOne({email: this.data.email});  //if mongodb doesn't find a doc the promise will return to null
-     if (emailExists){this.errors.push('This email is already being used')}
+     if (emailExists){this.errors.push("This email is already being used")}
         }
         resolve()
   })
@@ -103,27 +103,21 @@ User.prototype.login = function () {
     // will return a new object that is a promise
     this.cleanUp(); // we cleaned up the data
     // does the user exist?  we have to access our mongodb  usersCollection(a,b)
-    usersCollection
-      .findOne({ username: this.data.username })
-      .then((attemptedUser) => {
-        if (
-          attemptedUser &&
-          bcrypt.compareSync(this.data.password, attemptedUser.password)
-        ) {
+    usersCollection.findOne({ username: this.data.username }).then((attemptedUser) => {
+        if (attemptedUser && bcrypt.compareSync(this.data.password, attemptedUser.password)) {
           //if (attemptedUser && attemptedUser.password == this.data.password) {
-          resolve('<h1 style="color:green;">Congrats!</h1>');
+          resolve('Congrats!');
         } else {
           reject('Invalid Username / Password!');
         }
-      })
-      .catch(function () {
+      }).catch(function () {
         reject('Please try again later');
       });
   });
 };
 
 User.prototype.register = function (){
-  return new Promise (async  (resolve, reject )=> {
+  return new Promise (async (resolve, reject ) => {
     //step 1 - validate userdata  see User.prototype.cleanup and User.prototype.validate
     this.cleanUp(); // notice we cleanup the data before we send it over for validation
     await this.validate();
