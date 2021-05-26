@@ -15,7 +15,7 @@ const User = require('../models/User');
 exports.login = function (req, res) {
   let user = new User(req.body);
   user.login().then(function (itworks) {
-      req.session.user = {favoriteColor: 'blue', username: user.data.username};
+      req.session.user = {avatar: user.avatar, username: user.data.username};
       req.session.save(function () {
         res.redirect('/');
       });
@@ -43,7 +43,7 @@ exports.register = async (req, res) => {
   const user = new User(req.body);
   try {
     await user.register();
-    req.session.user = { username: user.username };
+    req.session.user = { username: user.username, avatar:user.avatar };
   } catch (regErrors) {
     regErrors.forEach(error => {
       req.flash('regErrors', error);
@@ -75,7 +75,7 @@ exports.register = async (req, res) => {
 
 exports.home = function (req, res) {
   if (req.session.user) {
-    res.render('home-dashboard', {username: req.session.user.username.toUpperCase()});
+    res.render('home-dashboard', {username: req.session.user.username,  avatar: req.session.user.avatar});
     /*[0].toUpperCase()+req.session.user.username.toLowerCase().slice(1)*/
   } else {
     res.render('home-guest', { errors: req.flash('errors'), regErrors: req.flash('regErrors')});
