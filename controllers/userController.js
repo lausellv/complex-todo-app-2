@@ -25,12 +25,13 @@ exports.login = function (req, res) {
         res.redirect('/');
       });
     })
-    .catch(function (doesntWorkError) {  // typically one uses e
-req.flash('errors', doesntWorkError)
-// req.session.flash.errors = [doesntWorkError]
-  req.session.save(function (){
+    .catch(function (doesntWorkError) {
+      // typically one uses e
+      req.flash('errors', doesntWorkError);
+      // req.session.flash.errors = [doesntWorkError]
+      req.session.save(function () {
         res.redirect('/');
-      })
+      });
     });
 };
 
@@ -50,27 +51,31 @@ exports.logout = function (req, res) {
 
 exports.register = function (req, res) {
   let user = new User(req.body);
-  user.register();
-  // if length is 0 condition won't be met
-  if (user.errors.length) {
-    user.errors.forEach(function(error){
-      req.flash('regErrors', error)
-    }); ///sending errors to user
-    req.session.save(function(){
-      res.redirect('/')
+  user
+    .register()
+    .then(() => {
+      req.session.user = { username: user.data.username };
+      req.session.save(function () {
+        res.redirect('/');
+      });
     })
-  } else {
-    res.send('<h1 style="color:green">Congrats, there are no errors</h1>');
-  }
+    .catch((regErrors) => {
+      regErrors.forEach(function (error) {
+        req.flash('regErrors', error);
+      }); ///sending errors to user
+      req.session.save(function () {
+        res.redirect('/');
+      });
+    });
 };
 
 exports.home = function (req, res) {
   if (req.session.user) {
     res.render('home-dashboard', {
-      username: req.session.user.username.toUpperCase()
+      username: req.session.user.username.toUpperCase(),
     });
     /*[0].toUpperCase()+req.session.user.username.toLowerCase().slice(1)*/
   } else {
-    res.render('home-guest', {errors: req.flash('errors')});
+    res.render('home-guest', { errors: req.flash('errors') });
   }
 };
