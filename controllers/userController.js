@@ -40,38 +40,22 @@ exports.logout = function (req, res) {
 
 
 exports.register = async (req, res) => {
-  const user = new User(req.body);
-  try {
-    await user.register();
-    req.session.user = { username: user.username, avatar:user.avatar };
-  } catch (regErrors) {
-    regErrors.forEach(error => {
-      req.flash('regErrors', error);
-    });
-  } finally {
-    req.session.save(() => {
-      res.redirect('/');
-    });
-  }
-};
+  let user = new User(req.body);
+  user.register().then(() => {
+    req.session.user = {username: user.data.username}
+    req.session.save(function() {
+      res.redirect('/')
+    })
+  }).catch((regErrors) => {
+    regErrors.forEach(function(error) {
+      req.flash('regErrors', error)
+    })
+    req.session.save(function() {
+      res.redirect('/')
+    })
+  })
+}
 
-
-// exports.register = function (req, res) {
-//   let user = new User(req.body);
-//   user.register().then(() => {
-//       req.session.user = { username: user.data.username };
-//       req.session.save(function () {
-//         res.redirect('/');
-//       });
-//     }).catch((regErrors) => {
-//       regErrors.forEach(function (error) {
-//         req.flash('regErrors', error);
-//       }); ///sending errors to user
-//       req.session.save(function () {
-//         res.redirect('/');
-//       });
-//     });
-// };
 
 exports.home = function (req, res) {
   if (req.session.user) {

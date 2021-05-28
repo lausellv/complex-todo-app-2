@@ -50,38 +50,38 @@ User.prototype.validate = function (){
     ) {
       this.errors.push('Username can only contain letters and numbers');
     }
+     //validator.isEmail(a)  returns True or False, once we know it is a valid email (TRUE) we don't need to push an item to the errors array so instead we use ! to do the opposite.  Now , if the user types in a valid email the if (!True) = False so nothing is pushed onto the errors array.
+     if (!validator.isEmail(this.data.email)) {
+      this.errors.push('You must provide a valid email address');
+    }
+    if (this.data.password == '') {
+      this.errors.push('You must provide a password');
+    }
+    if (this.data.password.length > 0 && this.data.password.length < 7) {
+      this.errors.push('Password must be at least 7 characters long');
+    }
     if (this.data.username.length > 30) {
       this.errors.push('Username cannot exceed 30 characters.');
     }
     if (this.data.username.length > 0 && this.data.username.length < 3) {
       this.errors.push('Username must be at least 3 characters long');
     }
-  
-    //validator.isEmail(a)  returns True or False, once we know it is a valid email (TRUE) we don't need to push an item to the errors array so instead we use ! to do the opposite.  Now , if the user types in a valid email the if (!True) = False so nothing is pushed onto the errors array.
-    if (!validator.isEmail(this.data.email)) {
-      this.errors.push('You must provide a valid email');
-    }
-  
-    if (this.data.password == '') {
-      this.errors.push('you must provide a password');
-    }
-    if (this.data.password.length > 0 && this.data.password.length < 7) {
-      this.errors.push('Password must be at least 7 characters long');
-    }
     if (this.data.password.length > 20) {
       this.errors.push('Password cannot exceed 20 characters.');
     }
   
     // only if username is valid then check to see if it's already taken 
-    if (this.data.username.length > 2 && this.data.username.length < 31 && validator.isAlphanumeric(this.data.username)){
-  let usernameExists = await usersCollection.findOne({username: this.data.username});  //if mongodb doesn't find a doc the promise will return to null
-  if (usernameExists){this.errors.push("This username is already taken")}
+    if (this.data.username.length > 2 && this.data.username.length < 31 && validator.isAlphanumeric(this.data.username)) {
+      let usernameExists = await usersCollection.findOne({username: this.data.username})
+      if (usernameExists) {this.errors.push("That username is already taken.")}
     }
+    //if mongodb doesn't find a doc the promise will return to null
+ 
   
      // only if email is valid then check to see if it's already taken 
     if (validator.isEmail(this.data.email)){
       let emailExists = await usersCollection.findOne({email: this.data.email});  //if mongodb doesn't find a doc the promise will return to null
-     if (emailExists){this.errors.push("This email is already being used")}
+     if (emailExists){this.errors.push("This email is already being used.")}
         }
         resolve()
   })
@@ -138,7 +138,7 @@ User.prototype.register = function (){
     } else {
       reject(this.errors)
     }
-  });
+  })
 }
 
 User.prototype.getAvatar = function (){
