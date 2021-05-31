@@ -19,7 +19,7 @@ Post.prototype.cleanUp = function () {
     title: this.data.title.trim(),
     body: this.data.body.trim(),
     createdDate: new Date(),
-    author: ObjectID(this.userid)
+    author: ObjectID(this.userid)  // mongodb prefers it fi we store an ID value ie ObjectId object type
   };
 };
 Post.prototype.validate = function () {
