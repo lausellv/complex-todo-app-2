@@ -20,5 +20,7 @@ router.post(
   userController.mustBeLoggedIn,
   postController.create
 );
-module.exports = router;
 router.get('/post/:id', postController.viewSingle);
+
+module.exports = router;
+
