@@ -1,5 +1,6 @@
 const postsCollection = require('../db').db().collection('posts');
 const ObjectID = require('mongodb').ObjectID;
+const User = require('./User');
 
 let Post = function (data, userid) {
   this.data = data;
@@ -54,23 +55,44 @@ Post.prototype.create = function () {
 
 Post.findSingleById = function (id) {
   return new Promise(async function (resolve, reject) {
-    if (typeof (id) != 'string' || !ObjectID.isValid(id)) {
+    if (typeof id != 'string' || !ObjectID.isValid(id)) {
       reject();
       return;
     }
-    let posts = await postsCollection.aggregate([
-      {$match: {_id: new ObjectID(id)}},
-      {$lookup: {from: "users", localField: "author", foreignField: "_id", as: "authorDocument"}},
-      {$project: {
-        title: true,  /*you can use 1 or true*/
-        body: 1,
-        createdDate: 1,
-        author: {$arrayElemAt: ["$authorDocument", 0]}
-      }}
+    let posts = await postsCollection
+      .aggregate([
+        { $match: { _id: new ObjectID(id) } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'author',
+            foreignField: '_id',
+            as: 'authorDocument',
+          },
+        },
+        {
+          $project: {
+            title: true /*you can use 1 or true*/,
+            body: 1,
+            createdDate: 1,
+            author: { $arrayElemAt: ['$authorDocument', 0] },
+          },
+        },
       ])
       .toArray();
+
+    // cleanup author property in each post object
+    // will create a new array using the maps method based on the post array
+    posts = posts.map(function (post) {
+      post.author = {
+        username: post.author.username,
+        avatar: new User(post.author, true).avatar,
+      };
+      return post;
+    });
+
     if (posts.length) {
-      console.log(posts[0])
+      console.log(posts[0]);
       resolve(posts[0]);
     } else {
       reject();
